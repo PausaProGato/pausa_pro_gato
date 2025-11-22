@@ -19,7 +19,7 @@ public class ExerciciosFeitosResource {
         return Response.status(Response.Status.CREATED)
                 .entity("{\"message\": \"" + msg + "\"}")
                 .build();
-    }
+     }
 
     @PUT
     @Path("/{id}")
