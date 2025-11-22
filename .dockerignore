@@ -1,3 +1,18 @@
+# IGNORAR CÓDIGOS COMPILADOS
 target/
+
+# IGNORAR IDEs
+.idea/
+*.iml
+*.ipr
+*.iws
+.vscode/
+
+# IGNORAR LOGS
+*.log
+
+# NÃO IGNORAR itens necessários ao build
 !.mvn/
 !mvnw
+!pom.xml
+!src/
