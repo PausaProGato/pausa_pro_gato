@@ -9,6 +9,7 @@ import java.sql.SQLException;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 @Path("/registros")
 @Produces(MediaType.APPLICATION_JSON)
@@ -161,7 +162,16 @@ public class RegistroDiarioResource {
                 qualidadeSono.setHoras_duracao((String) sonoMap.get("horas_duracao"));
                 qualidadeSono.setObservacoes((String) sonoMap.get("observacoes"));
                 qualidadeSono.setData(LocalDate.parse((String) sonoMap.get("data")));
-                bo.atualizarQualidadeSono(qualidadeSono);
+
+                List<QualidadeSono> sonoList = bo.selecionarQualidadeSono();
+                Optional<QualidadeSono> sonoExistente = sonoList.stream()
+                        .filter(s -> s.getUsuario_id() == id).findFirst();
+                if (sonoExistente.isPresent()) {
+                    qualidadeSono.setId(sonoExistente.get().getId());
+                    bo.atualizarQualidadeSono(qualidadeSono);
+                } else {
+                    bo.inserirQualidadeSono(qualidadeSono);
+                }
             }
 
             // Pausas
@@ -173,7 +183,16 @@ public class RegistroDiarioResource {
                 pausas.setQuantidade_pausas((String) pausasMap.get("quantidade_pausas"));
                 pausas.setDuracao_media((String) pausasMap.get("duracao_media"));
                 pausas.setData(LocalDate.parse((String) pausasMap.get("data")));
-                bo.atualizarPausas(pausas);
+
+                List<Pausas> pausasList = bo.selecionarPausas();
+                Optional<Pausas> pausaExistente = pausasList.stream()
+                        .filter(p -> p.getUsuario_id() == id).findFirst();
+                if (pausaExistente.isPresent()) {
+                    pausas.setId(pausaExistente.get().getId());
+                    bo.atualizarPausas(pausas);
+                } else {
+                    bo.inserirPausas(pausas);
+                }
             }
 
             // Observações
@@ -184,7 +203,16 @@ public class RegistroDiarioResource {
                 observacoes.setUsuario_id(id);
                 observacoes.setTexto((String) observacaoMap.get("texto"));
                 observacoes.setData(LocalDate.parse((String) observacaoMap.get("data")));
-                bo.atualizarObservacoes(observacoes);
+
+                List<Observacoes> obsList = bo.selecionarObservacoes();
+                Optional<Observacoes> observacaoExistente = obsList.stream()
+                        .filter(o -> o.getUsuario_id() == id).findFirst();
+                if (observacaoExistente.isPresent()) {
+                    observacoes.setId(observacaoExistente.get().getId());
+                    bo.atualizarObservacoes(observacoes);
+                } else {
+                    bo.inserirObservacoes(observacoes);
+                }
             }
 
             // Nivel Estresse
@@ -196,7 +224,16 @@ public class RegistroDiarioResource {
                 nivelEstresse.setNivel_estresse((String) estresseMap.get("nivel_estresse"));
                 nivelEstresse.setDescricao_estresse((String) estresseMap.get("descricao_estresse"));
                 nivelEstresse.setData(LocalDate.parse((String) estresseMap.get("data")));
-                bo.atualizarNivelEstresse(nivelEstresse);
+
+                List<NivelEstresse> stressList = bo.selecionarNivelEstresse();
+                Optional<NivelEstresse> estresseExistente = stressList.stream()
+                        .filter(n -> n.getUsuario_id() == id).findFirst();
+                if (estresseExistente.isPresent()) {
+                    nivelEstresse.setId(estresseExistente.get().getId());
+                    bo.atualizarNivelEstresse(nivelEstresse);
+                } else {
+                    bo.inserirNivelEstresse(nivelEstresse);
+                }
             }
 
             // Humor
@@ -208,7 +245,16 @@ public class RegistroDiarioResource {
                 humor.setNivel_humor((String) humorMap.get("nivel_humor"));
                 humor.setDescricao_humor((String) humorMap.get("descricao_humor"));
                 humor.setData(LocalDate.parse((String) humorMap.get("data")));
-                bo.atualizarHumor(humor);
+
+                List<Humor> humorList = bo.selecionarHumores();
+                Optional<Humor> humorExistente = humorList.stream()
+                        .filter(h -> h.getUsuario_id() == id).findFirst();
+                if (humorExistente.isPresent()) {
+                    humor.setId(humorExistente.get().getId());
+                    bo.atualizarHumor(humor);
+                } else {
+                    bo.inserirHumor(humor);
+                }
             }
 
             // Exercícios Feitos
@@ -220,7 +266,16 @@ public class RegistroDiarioResource {
                 exerciciosFeitos.setTipos((String) exerciciosMap.get("tipos"));
                 exerciciosFeitos.setQuantidade_exercicio((String) exerciciosMap.get("quantidade_exercicio"));
                 exerciciosFeitos.setData(LocalDate.parse((String) exerciciosMap.get("data")));
-                bo.atualizarExerciciosFeitos(exerciciosFeitos);
+
+                List<ExerciciosFeitos> exercList = bo.selecionarExerciciosFeitos();
+                Optional<ExerciciosFeitos> exercExistente = exercList.stream()
+                        .filter(e -> e.getUsuario_id() == id).findFirst();
+                if (exercExistente.isPresent()) {
+                    exerciciosFeitos.setId(exercExistente.get().getId());
+                    bo.atualizarExerciciosFeitos(exerciciosFeitos);
+                } else {
+                    bo.inserirExerciciosFeitos(exerciciosFeitos);
+                }
             }
 
             return Response.ok("{\"message\": \"Registro completo atualizado com sucesso\"}")
