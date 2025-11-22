@@ -45,7 +45,6 @@ public class RegistroDiarioResource {
     public Response inserirRegistro(Map<String, Object> dados) throws ClassNotFoundException, SQLException {
         RegistroDiarioBO bo = new RegistroDiarioBO();
         try {
-            // Usuário
             Object usuarioObj = dados.get("usuario");
             if (!(usuarioObj instanceof Map)) throw new IllegalArgumentException("Usuário inválido");
             Map<String, Object> usuarioMap = (Map<String, Object>) usuarioObj;
@@ -57,7 +56,6 @@ public class RegistroDiarioResource {
             bo.inserirUsuario(usuario);
             int usuarioId = usuario.getId();
 
-            // Qualidade Sono
             Object sonoObj = dados.get("qualidadeSono");
             if (sonoObj instanceof Map) {
                 Map<String, Object> sonoMap = (Map<String, Object>) sonoObj;
@@ -70,7 +68,6 @@ public class RegistroDiarioResource {
                 bo.inserirQualidadeSono(qualidadeSono);
             }
 
-            // Pausas
             Object pausasObj = dados.get("pausas");
             if (pausasObj instanceof Map) {
                 Map<String, Object> pausasMap = (Map<String, Object>) pausasObj;
@@ -82,7 +79,6 @@ public class RegistroDiarioResource {
                 bo.inserirPausas(pausas);
             }
 
-            // Observações
             Object observacaoObj = dados.get("observacoes");
             if (observacaoObj instanceof Map) {
                 Map<String, Object> observacaoMap = (Map<String, Object>) observacaoObj;
@@ -93,7 +89,6 @@ public class RegistroDiarioResource {
                 bo.inserirObservacoes(observacoes);
             }
 
-            // Nivel Estresse
             Object estresseObj = dados.get("nivelEstresse");
             if (estresseObj instanceof Map) {
                 Map<String, Object> estresseMap = (Map<String, Object>) estresseObj;
@@ -105,7 +100,6 @@ public class RegistroDiarioResource {
                 bo.inserirNivelEstresse(nivelEstresse);
             }
 
-            // Humor
             Object humorObj = dados.get("humor");
             if (humorObj instanceof Map) {
                 Map<String, Object> humorMap = (Map<String, Object>) humorObj;
@@ -117,7 +111,6 @@ public class RegistroDiarioResource {
                 bo.inserirHumor(humor);
             }
 
-            // Exercícios Feitos
             Object exerciciosObj = dados.get("exerciciosFeitos");
             if (exerciciosObj instanceof Map) {
                 Map<String, Object> exerciciosMap = (Map<String, Object>) exerciciosObj;
@@ -133,7 +126,6 @@ public class RegistroDiarioResource {
                     .entity("{\"message\": \"Registro completo criado com sucesso\"}")
                     .header("Access-Control-Allow-Origin", "*")
                     .build();
-
         } catch (Exception e) {
             return Response.status(Response.Status.BAD_REQUEST)
                     .entity("{\"error\": \"" + e.getMessage() + "\"}")
@@ -159,7 +151,77 @@ public class RegistroDiarioResource {
             usuario.setCargo((String) usuarioMap.get("cargo"));
             bo.atualizarUsuario(usuario);
 
-            // Se quiser garantir substituição total, pode inserir aqui delete dos filhos antes do update!
+            // Qualidade Sono
+            Object sonoObj = dados.get("qualidadeSono");
+            if (sonoObj instanceof Map) {
+                Map<String, Object> sonoMap = (Map<String, Object>) sonoObj;
+                QualidadeSono qualidadeSono = new QualidadeSono();
+                qualidadeSono.setUsuario_id(id);
+                qualidadeSono.setQualidade((String) sonoMap.get("qualidade"));
+                qualidadeSono.setHoras_duracao((String) sonoMap.get("horas_duracao"));
+                qualidadeSono.setObservacoes((String) sonoMap.get("observacoes"));
+                qualidadeSono.setData(LocalDate.parse((String) sonoMap.get("data")));
+                bo.atualizarQualidadeSono(qualidadeSono);
+            }
+
+            // Pausas
+            Object pausasObj = dados.get("pausas");
+            if (pausasObj instanceof Map) {
+                Map<String, Object> pausasMap = (Map<String, Object>) pausasObj;
+                Pausas pausas = new Pausas();
+                pausas.setUsuario_id(id);
+                pausas.setQuantidade_pausas((String) pausasMap.get("quantidade_pausas"));
+                pausas.setDuracao_media((String) pausasMap.get("duracao_media"));
+                pausas.setData(LocalDate.parse((String) pausasMap.get("data")));
+                bo.atualizarPausas(pausas);
+            }
+
+            // Observações
+            Object observacaoObj = dados.get("observacoes");
+            if (observacaoObj instanceof Map) {
+                Map<String, Object> observacaoMap = (Map<String, Object>) observacaoObj;
+                Observacoes observacoes = new Observacoes();
+                observacoes.setUsuario_id(id);
+                observacoes.setTexto((String) observacaoMap.get("texto"));
+                observacoes.setData(LocalDate.parse((String) observacaoMap.get("data")));
+                bo.atualizarObservacoes(observacoes);
+            }
+
+            // Nivel Estresse
+            Object estresseObj = dados.get("nivelEstresse");
+            if (estresseObj instanceof Map) {
+                Map<String, Object> estresseMap = (Map<String, Object>) estresseObj;
+                NivelEstresse nivelEstresse = new NivelEstresse();
+                nivelEstresse.setUsuario_id(id);
+                nivelEstresse.setNivel_estresse((String) estresseMap.get("nivel_estresse"));
+                nivelEstresse.setDescricao_estresse((String) estresseMap.get("descricao_estresse"));
+                nivelEstresse.setData(LocalDate.parse((String) estresseMap.get("data")));
+                bo.atualizarNivelEstresse(nivelEstresse);
+            }
+
+            // Humor
+            Object humorObj = dados.get("humor");
+            if (humorObj instanceof Map) {
+                Map<String, Object> humorMap = (Map<String, Object>) humorObj;
+                Humor humor = new Humor();
+                humor.setUsuario_id(id);
+                humor.setNivel_humor((String) humorMap.get("nivel_humor"));
+                humor.setDescricao_humor((String) humorMap.get("descricao_humor"));
+                humor.setData(LocalDate.parse((String) humorMap.get("data")));
+                bo.atualizarHumor(humor);
+            }
+
+            // Exercícios Feitos
+            Object exerciciosObj = dados.get("exerciciosFeitos");
+            if (exerciciosObj instanceof Map) {
+                Map<String, Object> exerciciosMap = (Map<String, Object>) exerciciosObj;
+                ExerciciosFeitos exerciciosFeitos = new ExerciciosFeitos();
+                exerciciosFeitos.setUsuario_id(id);
+                exerciciosFeitos.setTipos((String) exerciciosMap.get("tipos"));
+                exerciciosFeitos.setQuantidade_exercicio((String) exerciciosMap.get("quantidade_exercicio"));
+                exerciciosFeitos.setData(LocalDate.parse((String) exerciciosMap.get("data")));
+                bo.atualizarExerciciosFeitos(exerciciosFeitos);
+            }
 
             return Response.ok("{\"message\": \"Registro completo atualizado com sucesso\"}")
                     .header("Access-Control-Allow-Origin", "*")
