@@ -34,7 +34,7 @@ public class NivelEstresseResource {
     @Path("/{id}")
     public Response deletar(@PathParam("id") int id) throws ClassNotFoundException, SQLException {
         RegistroDiarioBO bo = new RegistroDiarioBO();
-        String msg = bo.deletarNivelEstresse(id);
+        String msg = bo.deletarNivelEstressePorUsuario(id);
         return Response.ok("{\"message\": \"" + msg + "\"}").build();
     }
 
@@ -44,4 +44,3 @@ public class NivelEstresseResource {
         return Response.ok(bo.selecionarNivelEstresse()).build();
     }
 }
-

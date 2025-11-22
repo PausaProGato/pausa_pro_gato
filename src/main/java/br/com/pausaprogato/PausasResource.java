@@ -34,7 +34,7 @@ public class PausasResource {
     @Path("/{id}")
     public Response deletar(@PathParam("id") int id) throws ClassNotFoundException, SQLException {
         RegistroDiarioBO bo = new RegistroDiarioBO();
-        String msg = bo.deletarPausas(id);
+        String msg = bo.deletarPausasPorUsuario(id);
         return Response.ok("{\"message\": \"" + msg + "\"}").build();
     }
 
@@ -44,4 +44,3 @@ public class PausasResource {
         return Response.ok(bo.selecionarPausas()).build();
     }
 }
-

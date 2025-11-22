@@ -34,10 +34,9 @@ public class QualidadeSonoResource {
     @Path("/{id}")
     public Response deletar(@PathParam("id") int id) throws ClassNotFoundException, SQLException {
         RegistroDiarioBO bo = new RegistroDiarioBO();
-        String msg = bo.deletarQualidadeSono(id);
+        String msg = bo.deletarQualidadeSonoPorUsuario(id);
         return Response.ok("{\"message\": \"" + msg + "\"}").build();
     }
-
 
     @GET
     public Response listarTodos() throws ClassNotFoundException, SQLException {
@@ -45,4 +44,3 @@ public class QualidadeSonoResource {
         return Response.ok(bo.selecionarQualidadeSono()).build();
     }
 }
-

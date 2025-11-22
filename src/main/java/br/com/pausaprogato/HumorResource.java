@@ -34,7 +34,7 @@ public class HumorResource {
     @Path("/{id}")
     public Response deletar(@PathParam("id") int id) throws ClassNotFoundException, SQLException {
         RegistroDiarioBO bo = new RegistroDiarioBO();
-        String msg = bo.deletarHumor(id);
+        String msg = bo.deletarHumorPorUsuario(id);
         return Response.ok("{\"message\": \"" + msg + "\"}").build();
     }
 
@@ -44,4 +44,3 @@ public class HumorResource {
         return Response.ok(bo.selecionarHumores()).build();
     }
 }
-

@@ -34,7 +34,7 @@ public class ObservacoesResource {
     @Path("/{id}")
     public Response deletar(@PathParam("id") int id) throws ClassNotFoundException, SQLException {
         RegistroDiarioBO bo = new RegistroDiarioBO();
-        String msg = bo.deletarObservacoes(id);
+        String msg = bo.deletarObservacoesPorUsuario(id);
         return Response.ok("{\"message\": \"" + msg + "\"}").build();
     }
 
@@ -44,4 +44,3 @@ public class ObservacoesResource {
         return Response.ok(bo.selecionarObservacoes()).build();
     }
 }
-

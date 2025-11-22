@@ -19,7 +19,7 @@ public class ExerciciosFeitosResource {
         return Response.status(Response.Status.CREATED)
                 .entity("{\"message\": \"" + msg + "\"}")
                 .build();
-     }
+    }
 
     @PUT
     @Path("/{id}")
@@ -34,7 +34,7 @@ public class ExerciciosFeitosResource {
     @Path("/{id}")
     public Response deletar(@PathParam("id") int id) throws ClassNotFoundException, SQLException {
         RegistroDiarioBO bo = new RegistroDiarioBO();
-        String msg = bo.deletarExerciciosFeitos(id);
+        String msg = bo.deletarExerciciosFeitosPorUsuario(id);
         return Response.ok("{\"message\": \"" + msg + "\"}").build();
     }
 
