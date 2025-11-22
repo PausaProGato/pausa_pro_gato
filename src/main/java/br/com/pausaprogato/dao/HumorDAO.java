@@ -1,7 +1,6 @@
 package br.com.pausaprogato.dao;
 
 import br.com.pausaprogato.beans.Humor;
-import br.com.pausaprogato.conexoes.ConexaoFactory;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -12,16 +11,11 @@ import java.util.List;
 
 public class HumorDAO {
 
-    public Connection minhaConexao;
+    private Connection minhaConexao;
 
-    public HumorDAO() throws SQLException, ClassNotFoundException {
-        this.minhaConexao = new ConexaoFactory().conexao();
-    }
-
-    public void fecharConexao() throws SQLException {
-        if(minhaConexao != null && !minhaConexao.isClosed()) {
-            minhaConexao.close();
-        }
+    // [translate:Construtor recebe a conexão]
+    public HumorDAO(Connection conn) {
+        this.minhaConexao = conn;
     }
 
     // Create
@@ -48,7 +42,7 @@ public class HumorDAO {
 
     // Read
     public List<Humor> selecionar() throws SQLException {
-        List<Humor> listaHumor = new ArrayList<Humor>();
+        List<Humor> listaHumor = new ArrayList<>();
         PreparedStatement stmt = minhaConexao.prepareStatement(
                 "SELECT * FROM HUMOR_PPGATO"
         );

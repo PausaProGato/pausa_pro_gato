@@ -4,31 +4,37 @@ import br.com.pausaprogato.beans.*;
 import br.com.pausaprogato.dao.*;
 
 import javax.swing.*;
+import java.sql.Connection;
 import java.sql.SQLException;
 import java.time.LocalDate;
 
 public class TesteInserir {
 
     // Dialog input
-    static String texto(String j){
+    static String texto(String j) {
         return JOptionPane.showInputDialog(j);
     }
 
     // Date input
-    static LocalDate lerData(String mensagem){
+    static LocalDate lerData(String mensagem) {
         return LocalDate.parse(texto(mensagem));
     }
 
     public static void main(String[] args) throws SQLException, ClassNotFoundException {
-        UsuarioDAO usuarioDAO = null;
-        QualidadeSonoDAO qualidadeSonoDAO = null;
-        PausasDAO pausasDAO = null;
-        ObservacoesDAO observacoesDAO = null;
-        NivelEstresseDAO nivelEstresseDAO = null;
-        HumorDAO humorDAO = null;
-        ExerciciosFeitosDAO exerciciosFeitosDAO = null;
+        Connection conn = null;
 
         try {
+            // Abre só uma conexão!
+            conn = new br.com.pausaprogato.conexoes.ConexaoFactory().conexao();
+
+            UsuarioDAO usuarioDAO = new UsuarioDAO(conn);
+            QualidadeSonoDAO qualidadeSonoDAO = new QualidadeSonoDAO(conn);
+            PausasDAO pausasDAO = new PausasDAO(conn);
+            ObservacoesDAO observacoesDAO = new ObservacoesDAO(conn);
+            NivelEstresseDAO nivelEstresseDAO = new NivelEstresseDAO(conn);
+            HumorDAO humorDAO = new HumorDAO(conn);
+            ExerciciosFeitosDAO exerciciosFeitosDAO = new ExerciciosFeitosDAO(conn);
+
             // Instancia objetos
             Usuario objUsuario = new Usuario();
             QualidadeSono objQualidadeSono = new QualidadeSono();
@@ -44,7 +50,6 @@ public class TesteInserir {
             objUsuario.setDepartamento(texto("Digite o departamento"));
             objUsuario.setCargo(texto("Digite o cargo"));
 
-            usuarioDAO = new UsuarioDAO();
             System.out.println(usuarioDAO.inserir(objUsuario));
             int usuarioIdGerado = objUsuario.getId(); // Pega o id do usuário cadastrado
 
@@ -63,7 +68,6 @@ public class TesteInserir {
             objQualidadeSono.setObservacoes(texto("Digite suas observações"));
             objQualidadeSono.setData(lerData("Digite a data (aaaa-MM-dd)"));
 
-            qualidadeSonoDAO = new QualidadeSonoDAO();
             System.out.println(qualidadeSonoDAO.inserir(objQualidadeSono));
 
             // Pausas
@@ -71,14 +75,12 @@ public class TesteInserir {
             objPausas.setDuracao_media(texto("Digite a duração média dessas pausas"));
             objPausas.setData(lerData("Digite a data (aaaa-MM-dd)"));
 
-            pausasDAO = new PausasDAO();
             System.out.println(pausasDAO.inserir(objPausas));
 
             // Observações
             objObservacoes.setTexto(texto("Digite sua observação"));
             objObservacoes.setData(lerData("Digite a data (aaaa-MM-dd)"));
 
-            observacoesDAO = new ObservacoesDAO();
             System.out.println(observacoesDAO.inserir(objObservacoes));
 
             // Nível Estresse
@@ -86,7 +88,6 @@ public class TesteInserir {
             objNivelEstresse.setDescricao_estresse(texto("Digite uma descrição desse estresse"));
             objNivelEstresse.setData(lerData("Digite a data (aaaa-MM-dd)"));
 
-            nivelEstresseDAO = new NivelEstresseDAO();
             System.out.println(nivelEstresseDAO.inserir(objNivelEstresse));
 
             // Humor
@@ -94,7 +95,6 @@ public class TesteInserir {
             objHumor.setDescricao_humor(texto("Digite uma descrição sobre seu humor"));
             objHumor.setData(lerData("Digite a data (aaaa-MM-dd)"));
 
-            humorDAO = new HumorDAO();
             System.out.println(humorDAO.inserir(objHumor));
 
             // Exercícios Feitos
@@ -102,18 +102,13 @@ public class TesteInserir {
             objExerciciosFeitos.setQuantidade_exercicio(texto("Digite a quantidade que cada exercício foi feito"));
             objExerciciosFeitos.setData(lerData("Digite a data (aaaa-MM-dd)"));
 
-            exerciciosFeitosDAO = new ExerciciosFeitosDAO();
             System.out.println(exerciciosFeitosDAO.inserir(objExerciciosFeitos));
 
         } finally {
-            // Fechar conexões
-            if (usuarioDAO != null) { try { usuarioDAO.fecharConexao(); } catch (SQLException e) {} }
-            if (qualidadeSonoDAO != null) { try { qualidadeSonoDAO.fecharConexao(); } catch (SQLException e) {} }
-            if (pausasDAO != null) { try { pausasDAO.fecharConexao(); } catch (SQLException e) {} }
-            if (observacoesDAO != null) { try { observacoesDAO.fecharConexao(); } catch (SQLException e) {} }
-            if (nivelEstresseDAO != null) { try { nivelEstresseDAO.fecharConexao(); } catch (SQLException e) {} }
-            if (humorDAO != null) { try { humorDAO.fecharConexao(); } catch (SQLException e) {} }
-            if (exerciciosFeitosDAO != null) { try { exerciciosFeitosDAO.fecharConexao(); } catch (SQLException e) {} }
+            // Fecha só a conexão principal!
+            if (conn != null && !conn.isClosed()) {
+                conn.close();
+            }
         }
     }
 }

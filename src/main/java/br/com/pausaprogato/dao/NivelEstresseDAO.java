@@ -1,7 +1,6 @@
 package br.com.pausaprogato.dao;
 
 import br.com.pausaprogato.beans.NivelEstresse;
-import br.com.pausaprogato.conexoes.ConexaoFactory;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -12,19 +11,14 @@ import java.util.List;
 
 public class NivelEstresseDAO {
 
-    public Connection minhaConexao;
+    private Connection minhaConexao;
 
-    public NivelEstresseDAO() throws SQLException, ClassNotFoundException {
-        this.minhaConexao = new ConexaoFactory().conexao();
+    // Construtor: recebe a conexão já aberta pelo BO
+    public NivelEstresseDAO(Connection conn) {
+        this.minhaConexao = conn;
     }
 
-    public void fecharConexao() throws SQLException {
-        if(minhaConexao != null && !minhaConexao.isClosed()) {
-            minhaConexao.close();
-        }
-    }
-
-    //Create
+    // Create
     public String inserir(NivelEstresse nivelEstresse) throws SQLException {
         PreparedStatement stmt = minhaConexao.prepareStatement(
                 "INSERT INTO NIVEL_ESTRESSE_PPGATO (usuario_id, nivel_estresse, descricao_estresse, data) VALUES (?, ?, ?, ?)",
@@ -46,7 +40,7 @@ public class NivelEstresseDAO {
         return "Informações de NivelEstresse cadastradas com sucesso! ID gerado: " + nivelEstresse.getId();
     }
 
-    //Read
+    // Read
     public List<NivelEstresse> selecionar() throws SQLException {
         List<NivelEstresse> listaNivelEstresse = new ArrayList<>();
         PreparedStatement stmt = minhaConexao.prepareStatement(
@@ -69,7 +63,7 @@ public class NivelEstresseDAO {
         return listaNivelEstresse;
     }
 
-    //Update
+    // Update
     public String atualizar(NivelEstresse nivelEstresse) throws SQLException {
         PreparedStatement stmt = minhaConexao.prepareStatement(
                 "UPDATE NIVEL_ESTRESSE_PPGATO SET usuario_id = ?, nivel_estresse = ?, descricao_estresse = ?, data = ? WHERE id = ?"
@@ -90,7 +84,7 @@ public class NivelEstresseDAO {
         }
     }
 
-    //Delete
+    // Delete
     public String deletar(int id) throws SQLException {
         PreparedStatement stmt = minhaConexao.prepareStatement(
                 "DELETE FROM NIVEL_ESTRESSE_PPGATO WHERE id = ?"

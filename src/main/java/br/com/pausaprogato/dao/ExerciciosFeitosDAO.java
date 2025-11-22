@@ -1,7 +1,6 @@
 package br.com.pausaprogato.dao;
 
 import br.com.pausaprogato.beans.ExerciciosFeitos;
-import br.com.pausaprogato.conexoes.ConexaoFactory;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -12,16 +11,11 @@ import java.util.List;
 
 public class ExerciciosFeitosDAO {
 
-    public Connection minhaConexao;
+    private Connection minhaConexao;
 
-    public ExerciciosFeitosDAO() throws SQLException, ClassNotFoundException {
-        this.minhaConexao = new ConexaoFactory().conexao();
-    }
-
-    public void fecharConexao() throws SQLException {
-        if(minhaConexao != null && !minhaConexao.isClosed()) {
-            minhaConexao.close();
-        }
+    // Construtor recebe a conexão já aberta
+    public ExerciciosFeitosDAO(Connection conn) {
+        this.minhaConexao = conn;
     }
 
     // Create
@@ -48,7 +42,7 @@ public class ExerciciosFeitosDAO {
 
     // Read
     public List<ExerciciosFeitos> selecionar() throws SQLException {
-        List<ExerciciosFeitos> listaExerciciosFeitos = new ArrayList<ExerciciosFeitos>();
+        List<ExerciciosFeitos> listaExerciciosFeitos = new ArrayList<>();
         PreparedStatement stmt = minhaConexao.prepareStatement(
                 "SELECT * FROM EXERCICIOS_FEITOS_PPGATO"
         );

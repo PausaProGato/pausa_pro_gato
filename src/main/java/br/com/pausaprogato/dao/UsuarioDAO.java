@@ -1,7 +1,6 @@
 package br.com.pausaprogato.dao;
 
 import br.com.pausaprogato.beans.Usuario;
-import br.com.pausaprogato.conexoes.ConexaoFactory;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -12,16 +11,11 @@ import java.util.List;
 
 public class UsuarioDAO {
 
-    public Connection minhaConexao;
+    private Connection minhaConexao;
 
-    public UsuarioDAO() throws SQLException, ClassNotFoundException {
-        this.minhaConexao = new ConexaoFactory().conexao();
-    }
-
-    public void fecharConexao() throws SQLException {
-        if(minhaConexao != null && !minhaConexao.isClosed()) {
-            minhaConexao.close();
-        }
+    // Construtor recebe a conexão já aberta pelo BO
+    public UsuarioDAO(Connection conn) {
+        this.minhaConexao = conn;
     }
 
     //Create
@@ -48,7 +42,7 @@ public class UsuarioDAO {
 
     //Read
     public List<Usuario> selecionar() throws SQLException {
-        List<Usuario> listaUsuarios = new ArrayList<Usuario>();
+        List<Usuario> listaUsuarios = new ArrayList<>();
         PreparedStatement stmt = minhaConexao.prepareStatement(
                 "SELECT * FROM USUARIO_PPGATO"
         );
@@ -65,6 +59,7 @@ public class UsuarioDAO {
 
             listaUsuarios.add(objUsuario);
         }
+        stmt.close();
         return listaUsuarios;
     }
 

@@ -1,7 +1,6 @@
 package br.com.pausaprogato.dao;
 
 import br.com.pausaprogato.beans.Pausas;
-import br.com.pausaprogato.conexoes.ConexaoFactory;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -12,19 +11,14 @@ import java.util.List;
 
 public class PausasDAO {
 
-    public Connection minhaConexao;
+    private Connection minhaConexao;
 
-    public PausasDAO() throws SQLException, ClassNotFoundException {
-        this.minhaConexao = new ConexaoFactory().conexao();
+    // Construtor recebe a conexão criada pelo BO
+    public PausasDAO(Connection conn) {
+        this.minhaConexao = conn;
     }
 
-    public void fecharConexao() throws SQLException {
-        if(minhaConexao != null && !minhaConexao.isClosed()) {
-            minhaConexao.close();
-        }
-    }
-
-    //Create
+    // Create
     public String inserir(Pausas pausas) throws SQLException {
         PreparedStatement stmt = minhaConexao.prepareStatement(
                 "INSERT INTO PAUSAS_PPGATO (usuario_id, quantidade_pausas, duracao_media, data) VALUES (?, ?, ?, ?)",
@@ -46,7 +40,7 @@ public class PausasDAO {
         return "Pausas cadastradas com sucesso! ID gerado: " + pausas.getId();
     }
 
-    //Read
+    // Read
     public List<Pausas> selecionar() throws SQLException {
         List<Pausas> listaPausas = new ArrayList<>();
         PreparedStatement stmt = minhaConexao.prepareStatement(
@@ -55,7 +49,7 @@ public class PausasDAO {
 
         ResultSet rs = stmt.executeQuery();
 
-        while (rs.next()){
+        while (rs.next()) {
             Pausas objPausas = new Pausas();
             objPausas.setId(rs.getInt("id"));
             objPausas.setUsuario_id(rs.getInt("usuario_id"));
@@ -69,7 +63,7 @@ public class PausasDAO {
         return listaPausas;
     }
 
-    //Update
+    // Update
     public String atualizar(Pausas pausas) throws SQLException {
         PreparedStatement stmt = minhaConexao.prepareStatement(
                 "UPDATE PAUSAS_PPGATO SET usuario_id = ?, quantidade_pausas = ?, duracao_media = ?, data = ? WHERE id = ?"
@@ -90,7 +84,7 @@ public class PausasDAO {
         }
     }
 
-    //Delete
+    // Delete
     public String deletar(int id) throws SQLException {
         PreparedStatement stmt = minhaConexao.prepareStatement(
                 "DELETE FROM PAUSAS_PPGATO WHERE id = ?"

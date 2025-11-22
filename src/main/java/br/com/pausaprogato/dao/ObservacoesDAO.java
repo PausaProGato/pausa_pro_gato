@@ -1,7 +1,6 @@
 package br.com.pausaprogato.dao;
 
 import br.com.pausaprogato.beans.Observacoes;
-import br.com.pausaprogato.conexoes.ConexaoFactory;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -12,16 +11,11 @@ import java.util.List;
 
 public class ObservacoesDAO {
 
-    public Connection minhaConexao;
+    private Connection minhaConexao;
 
-    public ObservacoesDAO() throws SQLException, ClassNotFoundException {
-        this.minhaConexao = new ConexaoFactory().conexao();
-    }
-
-    public void fecharConexao() throws SQLException {
-        if(minhaConexao != null && !minhaConexao.isClosed()) {
-            minhaConexao.close();
-        }
+    // Construtor: recebe a conexão já aberta pelo BO
+    public ObservacoesDAO(Connection conn) {
+        this.minhaConexao = conn;
     }
 
     //Create
@@ -54,7 +48,7 @@ public class ObservacoesDAO {
 
         ResultSet rs = stmt.executeQuery();
 
-        while (rs.next()){
+        while (rs.next()) {
             Observacoes objObservacoes = new Observacoes();
             objObservacoes.setId(rs.getInt("id"));
             objObservacoes.setUsuario_id(rs.getInt("usuario_id"));

@@ -2,7 +2,9 @@ package br.com.pausaprogato.bo;
 
 import br.com.pausaprogato.beans.*;
 import br.com.pausaprogato.dao.*;
+import br.com.pausaprogato.conexoes.ConexaoFactory;
 
+import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.*;
 
@@ -10,15 +12,16 @@ public class RegistroDiarioBO {
 
     // Selecionar todos dados agregados por usuário
     public List<Map<String, Object>> selecionarTudoBO() throws SQLException, ClassNotFoundException {
-        UsuarioDAO usuarioDAO = new UsuarioDAO();
-        QualidadeSonoDAO qualidadeSonoDAO = new QualidadeSonoDAO();
-        PausasDAO pausasDAO = new PausasDAO();
-        ObservacoesDAO observacoesDAO = new ObservacoesDAO();
-        NivelEstresseDAO nivelEstresseDAO = new NivelEstresseDAO();
-        HumorDAO humorDAO = new HumorDAO();
-        ExerciciosFeitosDAO exerciciosFeitosDAO = new ExerciciosFeitosDAO();
-
+        Connection conn = new ConexaoFactory().conexao();
         try {
+            UsuarioDAO usuarioDAO = new UsuarioDAO(conn);
+            QualidadeSonoDAO qualidadeSonoDAO = new QualidadeSonoDAO(conn);
+            PausasDAO pausasDAO = new PausasDAO(conn);
+            ObservacoesDAO observacoesDAO = new ObservacoesDAO(conn);
+            NivelEstresseDAO nivelEstresseDAO = new NivelEstresseDAO(conn);
+            HumorDAO humorDAO = new HumorDAO(conn);
+            ExerciciosFeitosDAO exerciciosFeitosDAO = new ExerciciosFeitosDAO(conn);
+
             List<Usuario> usuarios = usuarioDAO.selecionar();
             List<QualidadeSono> sonoList = qualidadeSonoDAO.selecionar();
             List<Pausas> pausasList = pausasDAO.selecionar();
@@ -31,7 +34,6 @@ public class RegistroDiarioBO {
 
             for (Usuario usuario : usuarios) {
                 Map<String, Object> registro = new LinkedHashMap<>();
-
                 registro.put("id", usuario.getId());
                 registro.put("nome", usuario.getNome());
                 registro.put("email", usuario.getEmail());
@@ -39,40 +41,29 @@ public class RegistroDiarioBO {
                 registro.put("cargo", usuario.getCargo());
 
                 registro.put("qualidadeSono", sonoList.stream()
-                        .filter(s -> s.getUsuario_id() == usuario.getId())
-                        .toList());
+                        .filter(s -> s.getUsuario_id() == usuario.getId()).toList());
                 registro.put("pausas", pausasList.stream()
-                        .filter(p -> p.getUsuario_id() == usuario.getId())
-                        .toList());
+                        .filter(p -> p.getUsuario_id() == usuario.getId()).toList());
                 registro.put("observacoes", obsList.stream()
-                        .filter(o -> o.getUsuario_id() == usuario.getId())
-                        .toList());
+                        .filter(o -> o.getUsuario_id() == usuario.getId()).toList());
                 registro.put("nivelEstresse", stressList.stream()
-                        .filter(n -> n.getUsuario_id() == usuario.getId())
-                        .toList());
+                        .filter(n -> n.getUsuario_id() == usuario.getId()).toList());
                 registro.put("humor", humorList.stream()
-                        .filter(h -> h.getUsuario_id() == usuario.getId())
-                        .toList());
+                        .filter(h -> h.getUsuario_id() == usuario.getId()).toList());
                 registro.put("exerciciosFeitos", exercList.stream()
-                        .filter(e -> e.getUsuario_id() == usuario.getId())
-                        .toList());
+                        .filter(e -> e.getUsuario_id() == usuario.getId()).toList());
 
                 resultado.add(registro);
             }
 
             return resultado;
         } finally {
-            usuarioDAO.fecharConexao();
-            qualidadeSonoDAO.fecharConexao();
-            pausasDAO.fecharConexao();
-            observacoesDAO.fecharConexao();
-            nivelEstresseDAO.fecharConexao();
-            humorDAO.fecharConexao();
-            exerciciosFeitosDAO.fecharConexao();
+            if (conn != null && !conn.isClosed()) {
+                conn.close();
+            }
         }
     }
 
-    // Buscar por usuário ID
     public Map<String, Object> buscarPorUsuarioIdBO(int usuarioId) throws SQLException, ClassNotFoundException {
         List<Map<String, Object>> todos = selecionarTudoBO();
         for (Map<String, Object> registro : todos) {
@@ -83,259 +74,315 @@ public class RegistroDiarioBO {
         return null;
     }
 
-    // Selecionar listas simples das entidades (para uso nos Resources REST)
+    // Métodos para pegar os dados simples
     public List<QualidadeSono> selecionarQualidadeSono() throws SQLException, ClassNotFoundException {
-        QualidadeSonoDAO dao = new QualidadeSonoDAO();
+        Connection conn = new ConexaoFactory().conexao();
         try {
-            return dao.selecionar();
+            return new QualidadeSonoDAO(conn).selecionar();
         } finally {
-            dao.fecharConexao();
+            if (conn != null && !conn.isClosed()) {
+                conn.close();
+            }
         }
     }
 
     public List<Pausas> selecionarPausas() throws SQLException, ClassNotFoundException {
-        PausasDAO dao = new PausasDAO();
+        Connection conn = new ConexaoFactory().conexao();
         try {
-            return dao.selecionar();
+            return new PausasDAO(conn).selecionar();
         } finally {
-            dao.fecharConexao();
+            if (conn != null && !conn.isClosed()) {
+                conn.close();
+            }
         }
     }
 
     public List<Observacoes> selecionarObservacoes() throws SQLException, ClassNotFoundException {
-        ObservacoesDAO dao = new ObservacoesDAO();
+        Connection conn = new ConexaoFactory().conexao();
         try {
-            return dao.selecionar();
+            return new ObservacoesDAO(conn).selecionar();
         } finally {
-            dao.fecharConexao();
+            if (conn != null && !conn.isClosed()) {
+                conn.close();
+            }
         }
     }
 
     public List<NivelEstresse> selecionarNivelEstresse() throws SQLException, ClassNotFoundException {
-        NivelEstresseDAO dao = new NivelEstresseDAO();
+        Connection conn = new ConexaoFactory().conexao();
         try {
-            return dao.selecionar();
+            return new NivelEstresseDAO(conn).selecionar();
         } finally {
-            dao.fecharConexao();
+            if (conn != null && !conn.isClosed()) {
+                conn.close();
+            }
         }
     }
 
     public List<Humor> selecionarHumores() throws SQLException, ClassNotFoundException {
-        HumorDAO dao = new HumorDAO();
+        Connection conn = new ConexaoFactory().conexao();
         try {
-            return dao.selecionar();
+            return new HumorDAO(conn).selecionar();
         } finally {
-            dao.fecharConexao();
+            if (conn != null && !conn.isClosed()) {
+                conn.close();
+            }
         }
     }
 
     public List<ExerciciosFeitos> selecionarExerciciosFeitos() throws SQLException, ClassNotFoundException {
-        ExerciciosFeitosDAO dao = new ExerciciosFeitosDAO();
+        Connection conn = new ConexaoFactory().conexao();
         try {
-            return dao.selecionar();
+            return new ExerciciosFeitosDAO(conn).selecionar();
         } finally {
-            dao.fecharConexao();
+            if (conn != null && !conn.isClosed()) {
+                conn.close();
+            }
         }
     }
 
     public List<Usuario> selecionarUsuarios() throws SQLException, ClassNotFoundException {
-        UsuarioDAO dao = new UsuarioDAO();
+        Connection conn = new ConexaoFactory().conexao();
         try {
-            return dao.selecionar();
+            return new UsuarioDAO(conn).selecionar();
         } finally {
-            dao.fecharConexao();
+            if (conn != null && !conn.isClosed()) {
+                conn.close();
+            }
         }
     }
 
-    // Inserir usuário e/ou entidade
+    // Métodos de inserir
     public String inserirUsuario(Usuario usuario) throws SQLException, ClassNotFoundException {
-        UsuarioDAO usuarioDAO = new UsuarioDAO();
+        Connection conn = new ConexaoFactory().conexao();
         try {
-            return usuarioDAO.inserir(usuario);
+            return new UsuarioDAO(conn).inserir(usuario);
         } finally {
-            usuarioDAO.fecharConexao();
+            if (conn != null && !conn.isClosed()) {
+                conn.close();
+            }
         }
     }
 
     public String inserirQualidadeSono(QualidadeSono qualidadeSono) throws SQLException, ClassNotFoundException {
-        QualidadeSonoDAO dao = new QualidadeSonoDAO();
+        Connection conn = new ConexaoFactory().conexao();
         try {
-            return dao.inserir(qualidadeSono);
+            return new QualidadeSonoDAO(conn).inserir(qualidadeSono);
         } finally {
-            dao.fecharConexao();
+            if (conn != null && !conn.isClosed()) {
+                conn.close();
+            }
         }
     }
 
     public String inserirPausas(Pausas pausas) throws SQLException, ClassNotFoundException {
-        PausasDAO dao = new PausasDAO();
+        Connection conn = new ConexaoFactory().conexao();
         try {
-            return dao.inserir(pausas);
+            return new PausasDAO(conn).inserir(pausas);
         } finally {
-            dao.fecharConexao();
+            if (conn != null && !conn.isClosed()) {
+                conn.close();
+            }
         }
     }
 
     public String inserirObservacoes(Observacoes obs) throws SQLException, ClassNotFoundException {
-        ObservacoesDAO dao = new ObservacoesDAO();
+        Connection conn = new ConexaoFactory().conexao();
         try {
-            return dao.inserir(obs);
+            return new ObservacoesDAO(conn).inserir(obs);
         } finally {
-            dao.fecharConexao();
+            if (conn != null && !conn.isClosed()) {
+                conn.close();
+            }
         }
     }
 
     public String inserirNivelEstresse(NivelEstresse n) throws SQLException, ClassNotFoundException {
-        NivelEstresseDAO dao = new NivelEstresseDAO();
+        Connection conn = new ConexaoFactory().conexao();
         try {
-            return dao.inserir(n);
+            return new NivelEstresseDAO(conn).inserir(n);
         } finally {
-            dao.fecharConexao();
+            if (conn != null && !conn.isClosed()) {
+                conn.close();
+            }
         }
     }
 
     public String inserirHumor(Humor h) throws SQLException, ClassNotFoundException {
-        HumorDAO dao = new HumorDAO();
+        Connection conn = new ConexaoFactory().conexao();
         try {
-            return dao.inserir(h);
+            return new HumorDAO(conn).inserir(h);
         } finally {
-            dao.fecharConexao();
+            if (conn != null && !conn.isClosed()) {
+                conn.close();
+            }
         }
     }
 
     public String inserirExerciciosFeitos(ExerciciosFeitos e) throws SQLException, ClassNotFoundException {
-        ExerciciosFeitosDAO dao = new ExerciciosFeitosDAO();
+        Connection conn = new ConexaoFactory().conexao();
         try {
-            return dao.inserir(e);
+            return new ExerciciosFeitosDAO(conn).inserir(e);
         } finally {
-            dao.fecharConexao();
+            if (conn != null && !conn.isClosed()) {
+                conn.close();
+            }
         }
     }
 
-    // Atualizar entidades
+    // Métodos de atualizar
     public String atualizarUsuario(Usuario usuario) throws SQLException, ClassNotFoundException {
-        UsuarioDAO usuarioDAO = new UsuarioDAO();
+        Connection conn = new ConexaoFactory().conexao();
         try {
-            return usuarioDAO.atualizar(usuario);
+            return new UsuarioDAO(conn).atualizar(usuario);
         } finally {
-            usuarioDAO.fecharConexao();
+            if (conn != null && !conn.isClosed()) {
+                conn.close();
+            }
         }
     }
 
     public String atualizarQualidadeSono(QualidadeSono qualidadeSono) throws SQLException, ClassNotFoundException {
-        QualidadeSonoDAO dao = new QualidadeSonoDAO();
+        Connection conn = new ConexaoFactory().conexao();
         try {
-            return dao.atualizar(qualidadeSono);
+            return new QualidadeSonoDAO(conn).atualizar(qualidadeSono);
         } finally {
-            dao.fecharConexao();
+            if (conn != null && !conn.isClosed()) {
+                conn.close();
+            }
         }
     }
 
     public String atualizarPausas(Pausas pausas) throws SQLException, ClassNotFoundException {
-        PausasDAO dao = new PausasDAO();
+        Connection conn = new ConexaoFactory().conexao();
         try {
-            return dao.atualizar(pausas);
+            return new PausasDAO(conn).atualizar(pausas);
         } finally {
-            dao.fecharConexao();
+            if (conn != null && !conn.isClosed()) {
+                conn.close();
+            }
         }
     }
 
     public String atualizarObservacoes(Observacoes obs) throws SQLException, ClassNotFoundException {
-        ObservacoesDAO dao = new ObservacoesDAO();
+        Connection conn = new ConexaoFactory().conexao();
         try {
-            return dao.atualizar(obs);
+            return new ObservacoesDAO(conn).atualizar(obs);
         } finally {
-            dao.fecharConexao();
+            if (conn != null && !conn.isClosed()) {
+                conn.close();
+            }
         }
     }
 
     public String atualizarNivelEstresse(NivelEstresse n) throws SQLException, ClassNotFoundException {
-        NivelEstresseDAO dao = new NivelEstresseDAO();
+        Connection conn = new ConexaoFactory().conexao();
         try {
-            return dao.atualizar(n);
+            return new NivelEstresseDAO(conn).atualizar(n);
         } finally {
-            dao.fecharConexao();
+            if (conn != null && !conn.isClosed()) {
+                conn.close();
+            }
         }
     }
 
     public String atualizarHumor(Humor h) throws SQLException, ClassNotFoundException {
-        HumorDAO dao = new HumorDAO();
+        Connection conn = new ConexaoFactory().conexao();
         try {
-            return dao.atualizar(h);
+            return new HumorDAO(conn).atualizar(h);
         } finally {
-            dao.fecharConexao();
+            if (conn != null && !conn.isClosed()) {
+                conn.close();
+            }
         }
     }
 
     public String atualizarExerciciosFeitos(ExerciciosFeitos e) throws SQLException, ClassNotFoundException {
-        ExerciciosFeitosDAO dao = new ExerciciosFeitosDAO();
+        Connection conn = new ConexaoFactory().conexao();
         try {
-            return dao.atualizar(e);
+            return new ExerciciosFeitosDAO(conn).atualizar(e);
         } finally {
-            dao.fecharConexao();
+            if (conn != null && !conn.isClosed()) {
+                conn.close();
+            }
         }
     }
 
-    // Deletar entidades
+    // Métodos de deletar
     public String deletarUsuario(int id) throws SQLException, ClassNotFoundException {
-        UsuarioDAO dao = new UsuarioDAO();
+        Connection conn = new ConexaoFactory().conexao();
         try {
-            return dao.deletar(id);
+            return new UsuarioDAO(conn).deletar(id);
         } finally {
-            dao.fecharConexao();
+            if (conn != null && !conn.isClosed()) {
+                conn.close();
+            }
         }
     }
 
     public String deletarQualidadeSono(int id) throws SQLException, ClassNotFoundException {
-        QualidadeSonoDAO dao = new QualidadeSonoDAO();
+        Connection conn = new ConexaoFactory().conexao();
         try {
-            return dao.deletar(id);
+            return new QualidadeSonoDAO(conn).deletar(id);
         } finally {
-            dao.fecharConexao();
+            if (conn != null && !conn.isClosed()) {
+                conn.close();
+            }
         }
     }
 
     public String deletarPausas(int id) throws SQLException, ClassNotFoundException {
-        PausasDAO dao = new PausasDAO();
+        Connection conn = new ConexaoFactory().conexao();
         try {
-            return dao.deletar(id);
+            return new PausasDAO(conn).deletar(id);
         } finally {
-            dao.fecharConexao();
+            if (conn != null && !conn.isClosed()) {
+                conn.close();
+            }
         }
     }
 
     public String deletarObservacoes(int id) throws SQLException, ClassNotFoundException {
-        ObservacoesDAO dao = new ObservacoesDAO();
+        Connection conn = new ConexaoFactory().conexao();
         try {
-            return dao.deletar(id);
+            return new ObservacoesDAO(conn).deletar(id);
         } finally {
-            dao.fecharConexao();
+            if (conn != null && !conn.isClosed()) {
+                conn.close();
+            }
         }
     }
 
     public String deletarNivelEstresse(int id) throws SQLException, ClassNotFoundException {
-        NivelEstresseDAO dao = new NivelEstresseDAO();
+        Connection conn = new ConexaoFactory().conexao();
         try {
-            return dao.deletar(id);
+            return new NivelEstresseDAO(conn).deletar(id);
         } finally {
-            dao.fecharConexao();
+            if (conn != null && !conn.isClosed()) {
+                conn.close();
+            }
         }
     }
 
     public String deletarHumor(int id) throws SQLException, ClassNotFoundException {
-        HumorDAO dao = new HumorDAO();
+        Connection conn = new ConexaoFactory().conexao();
         try {
-            return dao.deletar(id);
+            return new HumorDAO(conn).deletar(id);
         } finally {
-            dao.fecharConexao();
+            if (conn != null && !conn.isClosed()) {
+                conn.close();
+            }
         }
     }
 
     public String deletarExerciciosFeitos(int id) throws SQLException, ClassNotFoundException {
-        ExerciciosFeitosDAO dao = new ExerciciosFeitosDAO();
+        Connection conn = new ConexaoFactory().conexao();
         try {
-            return dao.deletar(id);
+            return new ExerciciosFeitosDAO(conn).deletar(id);
         } finally {
-            dao.fecharConexao();
+            if (conn != null && !conn.isClosed()) {
+                conn.close();
+            }
         }
     }
 }
