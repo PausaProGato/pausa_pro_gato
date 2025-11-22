@@ -13,25 +13,23 @@ import java.util.List;
 @Consumes(MediaType.APPLICATION_JSON)
 public class UsuarioResource {
 
-    // GET - Listar todos os usuários usando o BO
+    // GET - Listar todos os usuários (apenas dados puros)
     @GET
     public Response listarUsuarios() throws ClassNotFoundException, SQLException {
         RegistroDiarioBO bo = new RegistroDiarioBO();
         List<Usuario> lista = bo.selecionarUsuarios();
-
-        Response.ResponseBuilder response = Response.ok(lista);
-        response.header("Access-Control-Allow-Origin", "*");
-        return response.build();
+        return Response.ok(lista)
+                .header("Access-Control-Allow-Origin", "*")
+                .build();
     }
 
-    // GET - Buscar usuário por ID usando o BO
+    // GET - Buscar usuário por ID (apenas dados puros)
     @GET
     @Path("/{id}")
     public Response buscarUsuarioPorId(@PathParam("id") int id) throws ClassNotFoundException, SQLException {
         RegistroDiarioBO bo = new RegistroDiarioBO();
-        List<Usuario> lista = bo.selecionarUsuarios();
-
-        Usuario usuario = lista.stream()
+        Usuario usuario = bo.selecionarUsuarios()
+                .stream()
                 .filter(u -> u.getId() == id)
                 .findFirst()
                 .orElse(null);
@@ -39,27 +37,27 @@ public class UsuarioResource {
         if (usuario == null) {
             return Response.status(Response.Status.NOT_FOUND)
                     .entity("{\"error\": \"Usuário não encontrado\"}")
+                    .header("Access-Control-Allow-Origin", "*")
                     .build();
         }
-
-        Response.ResponseBuilder response = Response.ok(usuario);
-        response.header("Access-Control-Allow-Origin", "*");
-        return response.build();
+        return Response.ok(usuario)
+                .header("Access-Control-Allow-Origin", "*")
+                .build();
     }
 
-    // POST - Criar usuário usando o BO
+    // POST - Criar usuário
     @POST
     public Response inserirUsuario(Usuario usuario) throws ClassNotFoundException, SQLException {
         RegistroDiarioBO bo = new RegistroDiarioBO();
         String msg = bo.inserirUsuario(usuario);
 
-        Response.ResponseBuilder response = Response.status(Response.Status.CREATED)
-                .entity("{\"message\": \"" + msg + "\"}");
-        response.header("Access-Control-Allow-Origin", "*");
-        return response.build();
+        return Response.status(Response.Status.CREATED)
+                .entity("{\"message\": \"" + msg + "\"}")
+                .header("Access-Control-Allow-Origin", "*")
+                .build();
     }
 
-    // PUT - Atualizar usuário usando o BO
+    // PUT - Atualizar usuário
     @PUT
     @Path("/{id}")
     public Response atualizarUsuario(@PathParam("id") int id, Usuario usuario) throws ClassNotFoundException, SQLException {
@@ -67,21 +65,21 @@ public class UsuarioResource {
         RegistroDiarioBO bo = new RegistroDiarioBO();
         String msg = bo.atualizarUsuario(usuario);
 
-        Response.ResponseBuilder response = Response.ok("{\"message\": \"" + msg + "\"}");
-        response.header("Access-Control-Allow-Origin", "*");
-        return response.build();
+        return Response.ok("{\"message\": \"" + msg + "\"}")
+                .header("Access-Control-Allow-Origin", "*")
+                .build();
     }
 
-    // DELETE - Remover usuário usando o BO
+    // DELETE - Remover usuário
     @DELETE
     @Path("/{id}")
     public Response deletarUsuario(@PathParam("id") int id) throws ClassNotFoundException, SQLException {
         RegistroDiarioBO bo = new RegistroDiarioBO();
         String msg = bo.deletarUsuario(id);
 
-        Response.ResponseBuilder response = Response.ok("{\"message\": \"" + msg + "\"}");
-        response.header("Access-Control-Allow-Origin", "*");
-        return response.build();
+        return Response.ok("{\"message\": \"" + msg + "\"}")
+                .header("Access-Control-Allow-Origin", "*")
+                .build();
     }
 
     // OPTIONS - CORS support
